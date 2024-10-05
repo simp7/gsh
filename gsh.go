@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -43,6 +44,10 @@ func main() {
 		}
 
 		if err := execute(input); err != nil {
+			if errors.Is(err, exec.ErrNotFound) {
+				fmt.Println("No such file or directory (os error 2)")
+				continue
+			}
 			exitWithError(err)
 			return
 		}

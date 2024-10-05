@@ -13,9 +13,7 @@ func exitWithError(err error) {
 	os.Exit(1)
 }
 
-func execute(inputText string) error {
-	input := strings.TrimSpace(inputText)
-
+func execute(input string) error {
 	seperated := strings.Split(input, " ")
 	args := seperated[1:]
 
@@ -31,16 +29,22 @@ func execute(inputText string) error {
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print("gsh> ")
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			exitWithError(err)
+			return
+		}
+		input = strings.TrimSpace(input)
 
-	fmt.Print("gsh> ")
-	input, err := reader.ReadString('\n')
-	if err != nil {
-		exitWithError(err)
-		return
-	}
+		if input == "exit" {
+			return
+		}
 
-	if err := execute(input); err != nil {
-		exitWithError(err)
-		return
+		if err := execute(input); err != nil {
+			exitWithError(err)
+			return
+		}
 	}
 }

@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/simp7/gsh/sh"
 )
 
 func exitWithError(err error) {
@@ -30,6 +32,13 @@ func execute(input string) error {
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
+	s, err := sh.New()
+	if err != nil {
+		fmt.Printf("gsh start failed: %s\n", err)
+		os.Exit(1)
+		return
+	}
+
 	for {
 		fmt.Print("gsh> ")
 		input, err := reader.ReadString('\n')
@@ -39,17 +48,12 @@ func main() {
 		}
 		input = strings.TrimSpace(input)
 
-		if input == "exit" {
-			return
-		}
-
-		if err := execute(input); err != nil {
+		if err = s.Execute(input); err != nil {
 			if errors.Is(err, exec.ErrNotFound) {
 				fmt.Println("No such file or directory (os error 2)")
 				continue
 			}
-			exitWithError(err)
-			return
+			fmt.Println(err)
 		}
 	}
 }
